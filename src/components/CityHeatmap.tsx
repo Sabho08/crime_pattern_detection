@@ -4,6 +4,7 @@ import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { Radar, Crosshair, MapPin, Zap, Activity, Shield, Target, AlertTriangle } from 'lucide-react';
 import { MapLayerSelector } from './MapLayerSelector';
+import Loader from './Loader';
 
 // FIX FOR LEAFLET MARKER ICONS - USING CDN TO BYPASS BUILD ERRORS
 const markerIcon = 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png';
@@ -101,6 +102,11 @@ export const CityHeatmap = ({ darkMode = true }: CityHeatmapProps) => {
     const [hotspots, setHotspots] = useState<any[]>([]);
     const [predictiveZones, setPredictiveZones] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
+    const [map, setMap] = useState<L.Map | null>(null);
+
+    const handleZoomIn = () => map?.zoomIn();
+    const handleZoomOut = () => map?.zoomOut();
+    const handleResetView = () => map?.setView(position, 14);
 
     useEffect(() => {
         const loadMapData = async () => {
@@ -148,8 +154,12 @@ export const CityHeatmap = ({ darkMode = true }: CityHeatmapProps) => {
         backgroundColor: darkMode ? '#000000' : '#f8fafc'
     };
 
-    if (!isMounted) {
-        return <div style={{ height: '620px', width: '100%' }} className="bg-app-background animate-pulse rounded-2xl border border-app-border" />;
+    if (!isMounted || loading) {
+        return (
+            <div style={{ height: '620px', width: '100%' }} className="bg-app-background flex items-center justify-center rounded-2xl border border-app-border">
+                <Loader />
+            </div>
+        );
     }
 
     const tileUrl = darkMode
@@ -166,6 +176,7 @@ export const CityHeatmap = ({ darkMode = true }: CityHeatmapProps) => {
                 zoomControl={false}
                 attributionControl={false}
                 scrollWheelZoom={true}
+                ref={setMap}
             >
                 <TileLayer
                     key={darkMode ? 'dark-layer' : 'light-layer'}
@@ -288,12 +299,26 @@ export const CityHeatmap = ({ darkMode = true }: CityHeatmapProps) => {
 
             {/* Custom Tactical Zoom */}
             <div className="absolute bottom-8 left-8 z-[1000] flex flex-col gap-3">
-                <button className="w-12 h-12 bg-app-card/80 backdrop-blur-xl border border-app-border rounded-xl flex items-center justify-center text-app-text hover:bg-app-primary hover:text-white transition-all shadow-2xl group/zoom">
+                <button
+                    onClick={handleResetView}
+                    className="w-12 h-12 bg-app-card/80 backdrop-blur-xl border border-app-border rounded-xl flex items-center justify-center text-app-text hover:bg-app-primary hover:text-white transition-all shadow-2xl group/zoom"
+                    title="Reset View"
+                >
                     <Target className="w-5 h-5 group-hover/zoom:scale-110 transition-transform" />
                 </button>
                 <div className="flex flex-col bg-app-card/80 backdrop-blur-xl border border-app-border rounded-xl overflow-hidden shadow-2xl">
-                    <button className="w-12 h-12 flex items-center justify-center text-xl font-black text-app-text-dim hover:bg-app-primary hover:text-white transition-all border-b border-app-border">+</button>
-                    <button className="w-12 h-12 flex items-center justify-center text-xl font-black text-app-text-dim hover:bg-app-primary hover:text-white transition-all">-</button>
+                    <button
+                        onClick={handleZoomIn}
+                        className="w-12 h-12 flex items-center justify-center text-xl font-black text-app-text-dim hover:bg-app-primary hover:text-white transition-all border-b border-app-border"
+                    >
+                        +
+                    </button>
+                    <button
+                        onClick={handleZoomOut}
+                        className="w-12 h-12 flex items-center justify-center text-xl font-black text-app-text-dim hover:bg-app-primary hover:text-white transition-all"
+                    >
+                        -
+                    </button>
                 </div>
             </div>
 
