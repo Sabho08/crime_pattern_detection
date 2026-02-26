@@ -2,6 +2,18 @@ import React, { useState, useEffect } from 'react';
 import { Search, Filter, Download, MoreVertical, AlertCircle } from 'lucide-react';
 import { cn } from '../lib/utils';
 import { fetchFIRs } from '../lib/api';
+import Loader from './Loader';
+
+const sectionsMapping: Record<string, string> = {
+    '111': 'Organized Crime',
+    '303': 'Theft',
+    '115': 'Assault',
+    '126': 'Public Nuisance',
+    '70': 'Sexual Offenses',
+    '103': 'Murder',
+    '310': 'Robbery',
+    '320': 'Mischief'
+};
 
 export const BNSIntelligenceHub = () => {
     const [search, setSearch] = useState('');
@@ -24,9 +36,12 @@ export const BNSIntelligenceHub = () => {
     }, []);
 
     const filteredData = bnsData.filter(item => {
-        const matchesSearch = item.FIR_UID.toLowerCase().includes(search.toLowerCase()) ||
-            item.BNS_Section.toString().includes(search.toLowerCase());
-        const matchesFilter = filter === 'All' || item.Weapon_Type === filter;
+        const category = sectionsMapping[item.BNS_Section.toString()] || 'Other';
+        const matchesSearch =
+            item.FIR_UID.toLowerCase().includes(search.toLowerCase()) ||
+            item.BNS_Section.toString().includes(search.toLowerCase()) ||
+            category.toLowerCase().includes(search.toLowerCase());
+        const matchesFilter = filter === 'All' || category === filter;
         return matchesSearch && matchesFilter;
     });
 
@@ -38,7 +53,7 @@ export const BNSIntelligenceHub = () => {
                         <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-app-text-dim" />
                         <input
                             type="text"
-                            placeholder="Search FIR or Section..."
+                            placeholder="Search FIR, Section or Category..."
                             className="w-full bg-app-background border border-app-border rounded-lg pl-10 pr-4 py-2 text-sm outline-none focus:ring-2 focus:ring-app-primary/50 text-app-text"
                             value={search}
                             onChange={(e) => setSearch(e.target.value)}
@@ -50,9 +65,9 @@ export const BNSIntelligenceHub = () => {
                         onChange={(e) => setFilter(e.target.value)}
                     >
                         <option value="All">All Categories</option>
-                        <option value="Organized Crime">Organized Crime</option>
-                        <option value="Larceny">Larceny</option>
-                        <option value="Burglary">Burglary</option>
+                        {Object.values(sectionsMapping).map(cat => (
+                            <option key={cat} value={cat}>{cat}</option>
+                        ))}
                     </select>
                 </div>
                 <div className="flex items-center gap-2">
@@ -78,13 +93,27 @@ export const BNSIntelligenceHub = () => {
                         </tr>
                     </thead>
                     <tbody className="divide-y divide-app-border">
-                        {filteredData.map((item: any) => (
+                        {loading ? (
+                            <tr>
+                                <td colSpan={6} className="py-20 text-center">
+                                    <Loader />
+                                </td>
+                            </tr>
+                        ) : filteredData.length === 0 ? (
+                            <tr>
+                                <td colSpan={6} className="py-20 text-center text-app-text-dim text-sm">
+                                    No records found matching criteria.
+                                </td>
+                            </tr>
+                        ) : filteredData.map((item: any) => (
                             <tr key={item.FIR_UID} className="hover:bg-app-primary/5 transition-colors group">
                                 <td className="px-6 py-4 text-sm font-medium text-app-text">{item.FIR_UID}</td>
                                 <td className="px-6 py-4">
                                     <span className="px-2 py-1 bg-app-card rounded text-[11px] font-mono text-app-primary">§ {item.BNS_Section}</span>
                                 </td>
-                                <td className="px-6 py-4 text-sm text-app-text-dim">{item.Weapon_Type}</td>
+                                <td className="px-6 py-4 text-sm text-app-text-dim">
+                                    {sectionsMapping[item.BNS_Section.toString()] || 'Uncategorized'}
+                                </td>
                                 <td className="px-6 py-4 text-sm">
                                     <span className={cn(
                                         "flex items-center gap-1.5",

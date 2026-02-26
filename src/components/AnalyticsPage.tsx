@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { TrendingUp, Target, PieChart, BarChart2, Activity } from 'lucide-react';
 import { cn } from '../lib/utils';
 import { fetchBNSStats } from '../lib/api';
+import Loader from './Loader';
 
 export const AnalyticsPage = () => {
     const [stats, setStats] = React.useState<Record<string, number>>({});
@@ -20,6 +21,14 @@ export const AnalyticsPage = () => {
         };
         loadStats();
     }, []);
+
+    if (loading) {
+        return (
+            <div className="w-full h-[60vh] flex items-center justify-center">
+                <Loader />
+            </div>
+        );
+    }
 
     const sectionsMapping: Record<string, string> = {
         '103': 'BNS 103 (Murder)',
