@@ -96,25 +96,26 @@ export const AnalyticsPage = () => {
                     </div>
                 </div>
 
-                {/* Accuracy Metrics */}
-                <div className="glass-card p-8 flex flex-col items-center justify-center text-center">
-                    <PieChart className="w-8 h-8 text-app-primary mb-6" />
-                    <h3 className="text-sm font-black text-app-text uppercase tracking-widest mb-2">Model Confidence</h3>
-                    <div className="relative w-40 h-40 flex items-center justify-center mb-6">
-                        <svg className="w-full h-full -rotate-90">
-                            <circle cx="80" cy="80" r="70" fill="none" stroke="var(--border)" strokeWidth="12" />
-                            <circle cx="80" cy="80" r="70" fill="none" stroke="var(--primary)" strokeWidth="12"
-                                strokeDasharray="439.8" strokeDashoffset="44"
-                                className="drop-shadow-[0_0_8px_rgba(59,130,246,0.5)]" />
-                        </svg>
-                        <div className="absolute inset-0 flex flex-col items-center justify-center">
-                            <span className="text-4xl font-black text-app-text italic">90%</span>
-                            <span className="text-[10px] font-bold text-app-text-dim uppercase">Precision</span>
+                {/* Stats Matrix Sidebar Replacement */}
+                <div className="glass-card p-8 flex flex-col gap-6">
+                    <h3 className="text-sm font-black text-app-text uppercase tracking-widest flex items-center gap-2">
+                        <TrendingUp className="w-4 h-4 text-app-primary" />
+                        Key Insights
+                    </h3>
+                    <div className="space-y-4">
+                        <div className="p-4 bg-app-background/50 rounded-xl border border-app-border">
+                            <div className="text-[10px] font-black text-app-primary uppercase mb-1">Top Hazard</div>
+                            <div className="text-sm font-bold text-white">BNS 111 (Organized Crime)</div>
+                        </div>
+                        <div className="p-4 bg-app-background/50 rounded-xl border border-app-border">
+                            <div className="text-[10px] font-black text-emerald-500 uppercase mb-1">Peak Mitigation</div>
+                            <div className="text-sm font-bold text-white">Urban Core Night Vigil</div>
+                        </div>
+                        <div className="p-4 bg-app-background/50 rounded-xl border border-app-border">
+                            <div className="text-[10px] font-black text-blue-500 uppercase mb-1">Detection Delta</div>
+                            <div className="text-sm font-bold text-white">+5.2% YoY (Zone 4)</div>
                         </div>
                     </div>
-                    <p className="text-xs text-app-text-dim leading-relaxed max-w-[200px]">
-                        AI engine v4.0 showing 92% accuracy in predicting BNS 303 hotspots.
-                    </p>
                 </div>
             </div>
 

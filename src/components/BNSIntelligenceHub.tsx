@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Search, Filter, MoreVertical, AlertCircle } from 'lucide-react';
+import { Search, Filter, MoreVertical, AlertCircle, Send } from 'lucide-react';
 import { cn } from '../lib/utils';
 import { fetchFIRs } from '../lib/api';
 import Loader from './Loader';
@@ -111,7 +111,14 @@ export const BNSIntelligenceHub = () => {
                                     <span className="px-2 py-1 bg-app-card rounded text-[11px] font-mono text-app-primary">§ {item.BNS_Section}</span>
                                 </td>
                                 <td className="px-6 py-4 text-sm text-app-text-dim">
-                                    {sectionsMapping[item.BNS_Section.toString()] || 'Uncategorized'}
+                                    <div className="flex flex-col gap-1">
+                                        <span>{sectionsMapping[item.BNS_Section.toString()] || 'Uncategorized'}</span>
+                                        {item.BNS_Section.toString() === '111' && (
+                                            <span className="text-[9px] font-black text-rose-500 uppercase tracking-tighter flex items-center gap-1">
+                                                <AlertCircle className="w-2 h-2" /> NIA INTERVENTION ADVISED
+                                            </span>
+                                        )}
+                                    </div>
                                 </td>
                                 <td className="px-6 py-4 text-sm">
                                     <span className={cn(
@@ -126,9 +133,20 @@ export const BNSIntelligenceHub = () => {
                                     <Badge risk={item.Risk} />
                                 </td>
                                 <td className="px-6 py-4 text-center">
-                                    <button className="p-1 hover:bg-app-card rounded transition-colors text-app-text-dim">
-                                        <MoreVertical className="w-4 h-4" />
-                                    </button>
+                                    <div className="flex items-center gap-1">
+                                        <button className="p-1 hover:bg-app-card rounded transition-colors text-app-text-dim">
+                                            <MoreVertical className="w-4 h-4" />
+                                        </button>
+                                        {item.BNS_Section.toString() === '111' && (
+                                            <button
+                                                onClick={() => alert(`PROTOCOL INITIATED: Case ${item.FIR_UID} has been flagged for NIA/CBI federal handover. Secure data channel established.`)}
+                                                className="p-1.5 bg-rose-500/10 hover:bg-rose-500/20 rounded-lg transition-all text-rose-500"
+                                                title="Initiate NIA Handover"
+                                            >
+                                                <Send className="w-3.5 h-3.5" />
+                                            </button>
+                                        )}
+                                    </div>
                                 </td>
                             </tr>
                         ))}

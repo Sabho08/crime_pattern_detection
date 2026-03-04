@@ -79,16 +79,6 @@ export const Sidebar = ({ activeTab, setActiveTab }: SidebarProps) => {
                     </div>
                 </section>
 
-                {/* System Efficiency */}
-                <section className="bg-gradient-to-br from-blue-600/10 to-transparent p-6 rounded-2xl border border-blue-500/20 relative overflow-hidden">
-                    <div className="absolute top-0 right-0 w-24 h-24 bg-app-primary/5 blur-2xl rounded-full" />
-                    <h3 className="text-[10px] font-black text-app-primary uppercase tracking-[0.2em] mb-4">Neural Health</h3>
-                    <div className="flex items-end gap-3 mb-2">
-                        <span className="text-3xl font-black text-app-text italic">98.2</span>
-                        <span className="text-[10px] font-bold text-app-text-dim uppercase pb-1">Efficiency</span>
-                    </div>
-                    <p className="text-[10px] text-app-text-dim font-medium">System optimized for Zone 4. Peak performance detected across all signal nodes.</p>
-                </section>
             </div>
 
             <div className="p-6 border-t border-app-border/50 flex items-center justify-between">
