@@ -5,6 +5,8 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "backend-node": "cd backend_node && npm run dev",
+    "backend-python": "python backend_service/main.py",
     "build": "tsc && vite build",
     "preview": "vite preview"
   },

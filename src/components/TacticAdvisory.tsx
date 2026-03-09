@@ -1,9 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { Shield, MapPin, Activity, ChevronRight, AlertTriangle, Navigation } from 'lucide-react';
+import { Shield, MapPin, Activity, ChevronRight, Navigation } from 'lucide-react';
 import { cn } from '../lib/utils';
-
-// Using a proxy or direct fetch since we are in the same local environment
-const API_BASE_URL = 'http://localhost:8000';
+import { fetchAdvisories } from '../lib/api';
 
 interface Advisory {
     location: [number, number];
@@ -18,20 +16,17 @@ export const TacticAdvisory = () => {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        const fetchAdvisories = async () => {
+        const getAdvisories = async () => {
             try {
-                const response = await fetch(`${API_BASE_URL}/deterrence-advisories`);
-                if (response.ok) {
-                    const data = await response.json();
-                    setAdvisories(data);
-                }
+                const data = await fetchAdvisories();
+                setAdvisories(data);
             } catch (err) {
                 console.error("Advisory Fetch Error:", err);
             } finally {
                 setLoading(false);
             }
         };
-        fetchAdvisories();
+        getAdvisories();
     }, []);
 
     if (loading) return null;

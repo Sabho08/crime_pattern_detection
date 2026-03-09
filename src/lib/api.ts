@@ -1,4 +1,4 @@
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+export const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
 export const fetchHotspots = async () => {
     const response = await fetch(`${API_BASE_URL}/hotspots`);
@@ -33,5 +33,11 @@ export const predictRisk = async (data: { latitude: number; longitude: number; t
         body: JSON.stringify(data),
     });
     if (!response.ok) throw new Error('Failed to predict risk');
+    return response.json();
+};
+
+export const fetchAdvisories = async () => {
+    const response = await fetch(`${API_BASE_URL}/deterrence-advisories`);
+    if (!response.ok) throw new Error('Failed to fetch advisories');
     return response.json();
 };
