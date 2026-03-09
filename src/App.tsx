@@ -7,10 +7,13 @@ import { CityHeatmap } from './components/CityHeatmap';
 import { AnalyticsPage } from './components/AnalyticsPage';
 import { ResourcesPage } from './components/ResourcesPage';
 import ThemeSwitch from './components/ThemeSwitch';
-import { Shield, Users, MapPin, Activity, Bell, AlertTriangle } from 'lucide-react';
+import { Shield, Users, MapPin, Activity, Bell, AlertTriangle, LogOut, Settings, User } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from './lib/utils';
 import PillNav from './components/PillNav';
 import { Routes, Route, Navigate, useLocation, useNavigate } from 'react-router-dom';
+import { LoginPage } from './components/LoginPage';
+import { TacticAdvisory } from './components/TacticAdvisory';
 
 // Simple Error Boundary
 class ErrorBoundary extends React.Component<{ children: React.ReactNode }, { hasError: boolean, error: Error | null }> {
@@ -53,8 +56,26 @@ function App() {
     const location = useLocation();
     const navigate = useNavigate();
     const [darkMode, setDarkMode] = useState(true);
+    const [isAuthenticated, setIsAuthenticated] = useState(false);
+    const [currentUser, setCurrentUser] = useState<string | null>(null);
+    const [isProfileOpen, setIsProfileOpen] = useState(false);
 
     const activeTab = location.pathname.split('/')[1]?.toUpperCase() || 'COMMAND';
+
+    const handleLogout = () => {
+        setIsAuthenticated(false);
+        setCurrentUser(null);
+        navigate('/');
+    };
+
+    const handleLogin = (user: string) => {
+        setIsAuthenticated(true);
+        setCurrentUser(user);
+    };
+
+    if (!isAuthenticated) {
+        return <LoginPage onLogin={handleLogin} />;
+    }
 
     const toggleDarkMode = () => {
         setDarkMode(!darkMode);
@@ -68,7 +89,6 @@ function App() {
     const navItems = [
         { label: 'COMMAND', href: '/command' },
         { label: 'SIGNAL', href: '/signal' },
-        { label: 'RISK', href: '/risk' },
         { label: 'ANALYTICS', href: '/analytics' },
         { label: 'RESOURCES', href: '/resources' }
     ];
@@ -98,8 +118,48 @@ function App() {
                             <div className="text-[10px] font-black text-app-text tracking-wider">DIG VIKRAM SINGH</div>
                             <div className="text-[9px] text-app-text-dim font-bold uppercase tracking-tighter">Commanding Officer · Zone 4</div>
                         </div>
-                        <div className="w-10 h-10 rounded-full border-2 border-app-border overflow-hidden bg-app-card flex items-center justify-center">
-                            <Users className="w-5 h-5 text-app-text-dim" />
+                        <div className="relative">
+                            <button
+                                onClick={() => setIsProfileOpen(!isProfileOpen)}
+                                className="w-10 h-10 rounded-full border-2 border-app-border overflow-hidden bg-app-card flex items-center justify-center hover:border-app-primary transition-all active:scale-95"
+                            >
+                                <Users className="w-5 h-5 text-app-text-dim" />
+                            </button>
+
+                            <AnimatePresence>
+                                {isProfileOpen && (
+                                    <>
+                                        <div className="fixed inset-0 z-10" onClick={() => setIsProfileOpen(false)} />
+                                        <motion.div
+                                            initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                                            animate={{ opacity: 1, y: 0, scale: 1 }}
+                                            exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                                            className="absolute right-0 mt-3 w-56 bg-app-card border border-app-border rounded-2xl shadow-2xl p-2 z-20"
+                                        >
+                                            <div className="p-3 border-b border-app-border mb-2">
+                                                <div className="text-[10px] font-black text-app-text tracking-wider uppercase">Vikram Singh</div>
+                                                <div className="text-[8px] text-app-text-dim font-bold uppercase tracking-tighter">DIG · Commanding Officer</div>
+                                            </div>
+
+                                            <button className="w-full flex items-center gap-3 p-3 text-[10px] font-black text-app-text-dim hover:text-white hover:bg-app-primary/10 rounded-xl transition-all uppercase tracking-widest group">
+                                                <User size={14} className="group-hover:text-app-primary" /> Profile View
+                                            </button>
+                                            <button className="w-full flex items-center gap-3 p-3 text-[10px] font-black text-app-text-dim hover:text-white hover:bg-app-primary/10 rounded-xl transition-all uppercase tracking-widest group">
+                                                <Settings size={14} className="group-hover:text-app-primary" /> Command Settings
+                                            </button>
+
+                                            <div className="h-px bg-app-border my-2 mx-2" />
+
+                                            <button
+                                                onClick={handleLogout}
+                                                className="w-full flex items-center gap-3 p-3 text-[10px] font-black text-rose-500 hover:bg-rose-500/10 rounded-xl transition-all uppercase tracking-widest"
+                                            >
+                                                <LogOut size={14} /> Terminate Session
+                                            </button>
+                                        </motion.div>
+                                    </>
+                                )}
+                            </AnimatePresence>
                         </div>
                     </div>
                 </header>
@@ -125,7 +185,6 @@ function App() {
                                         <CrimeCalendar />
                                     </div>
                                     <div className="space-y-8">
-                                        <PredictiveRiskCalculator />
                                         <div className="glass-card p-6 bg-gradient-to-br from-blue-600/5 to-transparent border-app-border">
                                             <h3 className="text-[10px] font-black mb-6 flex items-center gap-2 text-app-text-dim uppercase tracking-widest">
                                                 <Bell className="w-4 h-4 text-app-primary" />
@@ -140,12 +199,12 @@ function App() {
                                                 VIEW SYSTEM LOGS
                                             </button>
                                         </div>
+                                        <TacticAdvisory />
                                     </div>
                                 </div>
                             </div>
                         } />
                         <Route path="/signal" element={<BNSIntelligenceHub />} />
-                        <Route path="/risk" element={<PredictiveRiskCalculator />} />
                         <Route path="/analytics" element={<AnalyticsPage />} />
                         <Route path="/resources" element={<ResourcesPage />} />
                     </Routes>
